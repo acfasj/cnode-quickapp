@@ -1,0 +1,38 @@
+<template>
+  <tabs class="page-index">
+    <tab-content>
+      <div>
+        <text>tab1</text>
+      </div>
+      <div>
+        <text>tab2</text>
+      </div>
+      <div>
+        <text>tab3</text>
+      </div>
+    </tab-content>
+    <tab-bar class="tab-bar">
+      <text class="tab-bar-item">全部</text>
+      <text class="tab-bar-item">精华</text>
+      <text class="tab-bar-item">更多</text>
+    </tab-bar>
+  </tabs>
+</template>
+
+<script>
+  export default {}
+</script>
+
+
+<style type="text/less" lang="less">
+  @import "../common/less/vars.less";
+
+  .page-index {
+    .tab-bar {
+      background-color: @color-main;
+      .tab-bar-item {
+        text-align: center;
+      }
+    }
+  }
+</style>
