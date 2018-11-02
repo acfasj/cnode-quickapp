@@ -63,5 +63,10 @@
       "never"
     ],
     "prettier/prettier": "error"
+  },
+  "globals": {
+    "_": true,
+    "fetch": true,
+    "prompt": true
   }
 }

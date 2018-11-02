@@ -1,0 +1,159 @@
+<template>
+  <list class="topic-list">
+    <list-item class="topic-item" type="topic" for="{{topicList}}">
+      <div class="item-top">
+        <text class="badge {{$item.top ? 'badge-stick' : 'badge-tab'}}">{{getBadgeText($item)}}</text>
+        <text class="item-top-text">
+          <span class="reply-count">{{$item.reply_count}}</span>
+          <span class="separator"> / </span>
+          <span>{{$item.visit_count}}</span>
+          <span class="separator"> • </span>
+          <span>{{$item.date.human}}</span>
+        </text>
+      </div>
+      <text class="title">{{$item.title}}</text>
+      <text class="content">{{$item.content}}</text>
+      <div class="item-bottom">
+        <div>
+          <image class="avatar" src="{{$item.author.avatar_url}}"></image>
+          <text class="username">{{$item.author.loginname}}</text>
+        </div>
+        <text class="created-at">创建于: {{$item.date.str}}</text>
+      </div>
+    </list-item>
+  </list>
+</template>
+
+<script>
+  import { getTopicList } from '../api/topic'
+
+  const newLineRE = /\n+|\r\n+|\r+/g
+
+  export default {
+    props: {
+      type: String,
+      default: '',
+    },
+
+    data() {
+      return {
+        topicList: [],
+        page: 1,
+      }
+    },
+
+    onInit() {
+      this._getTopicList()
+    },
+
+    getBadgeText(item) {
+      if (item.top) return '置顶'
+      switch (item.tab) {
+        case 'good':
+          return '精华'
+        case 'share':
+          return '分享'
+        case 'ask':
+          return '问答'
+        default:
+          return '未知'
+      }
+    },
+
+    async _getTopicList() {
+      let list
+      try {
+        list = await getTopicList({ page: this.page, tab: this.type })
+      } catch (e) {
+        prompt.showToast({ message: '获取主题出错' })
+        return console.error(e)
+      }
+
+      list.forEach(item => {
+        item.date = _.formatDate(item.create_at, true)
+        item.content = item.content.slice(0, 200).replace(newLineRE, '')
+        delete item.create_at
+      })
+
+      console.log(list)
+
+      this.topicList = this.topicList.concat(list)
+      this.page += 1
+    },
+  }
+</script>
+
+
+<style type="text/less" lang="less">
+  @import "../common/less/vars";
+
+  .topic-list {
+    background-color: @gray1;
+    font-size: @font-size-m;
+    color: @gray0;
+
+    /* item 顶部 */
+    .topic-item {
+      flex-direction: column;
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #ffffff;
+
+      .item-top {
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      .badge {
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .badge-stick {
+        color: #ffffff;
+        background-color: @color-main;
+      }
+      .badge-tab {
+        color: #8d8d8d;
+        background-color: @gray1;
+      }
+      .badge, .item-top-text {
+        font-size: @font-size-s;
+      }
+      .reply-count {
+        color: @color-main;
+      }
+
+      /* item 标题 */
+      .title {
+        color: @black1;
+      }
+
+      /* item 内容 */
+      .content {
+        lines: 4;
+        text-overflow: ellipsis;
+        padding-bottom: 30px;
+        margin: 10px 0;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: #e0e0e0;
+      }
+
+      /* item 底部 */
+      .item-bottom {
+        height: 40px;
+        justify-content: space-between;
+      }
+      .avatar {
+        height: 100%;
+        border-radius: 20px;
+        margin-right: 10px;
+      }
+      .username {
+        color: @black1;
+      }
+      .username, .created-at {
+        font-size: @font-size-s;
+      }
+    }
+  }
+</style>

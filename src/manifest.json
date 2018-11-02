@@ -3,18 +3,19 @@
   "name": "cnode-quickapp",
   "versionName": "1.0.0",
   "versionCode": "1",
-  "minPlatformVersion": "101",
+  "minPlatformVersion": "1020",
   "icon": "/common/img/logo.png",
   "features": [
     { "name": "system.prompt" },
     { "name": "system.router" },
-    { "name": "system.shortcut" }
+    { "name": "system.shortcut" },
+    { "name": "system.fetch" }
   ],
   "permissions": [
     { "origin": "*" }
   ],
   "config": {
-    "logLevel": "off"
+    "logLevel": "debug"
   },
   "router": {
     "entry": "index",

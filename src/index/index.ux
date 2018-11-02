@@ -1,11 +1,11 @@
+<import name="topic-list" src="../component/topic-list"></import>
+
 <template>
   <tabs class="page-index">
     <tab-content>
+      <topic-list></topic-list>
       <div>
-        <text>tab1</text>
-      </div>
-      <div>
-        <text>tab2</text>
+        <topic-list type="good"></topic-list>
       </div>
       <div>
         <text>tab3</text>
@@ -20,7 +20,9 @@
 </template>
 
 <script>
-  export default {}
+  export default {
+
+  }
 </script>
 
 
@@ -29,7 +31,7 @@
 
   .page-index {
     .tab-bar {
-      background-color: @color-main;
+      background-color: @gray0;
       .tab-bar-item {
         text-align: center;
       }
