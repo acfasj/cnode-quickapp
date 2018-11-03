@@ -1,27 +1,70 @@
 <import name="topic-list" src="../component/topic-list"></import>
 
 <template>
-  <tabs class="page-index">
+  <tabs class="page-index" onchange="onIndexTabsChange">
     <tab-content>
-      <topic-list></topic-list>
+      <!-- 帖子 tabs -->
+      <tabs class="topic-tabs" onchange="oTopicTabsChange">
+        <tab-bar class="topic-tab-bar">
+          <text for="{{topicTabBarItemList}}"
+                class="topic-tab-bar-item {{$idx === activeTopicTab ? 'topic-tab-bar-item-active' : '' }}"
+          >{{$item}}
+          </text>
+        </tab-bar>
+
+        <tab-content>
+          <topic-list></topic-list>
+          <div>
+            <!--<topic-list type="good"></topic-list>-->
+            <text>精华</text>
+          </div>
+          <div>
+            <text>问答</text>
+          </div>
+          <div>
+            <text>招聘</text>
+          </div>
+        </tab-content>
+      </tabs>
+
+      <!-- 我的 -->
       <div>
-        <!--<topic-list type="good"></topic-list>-->
-      </div>
-      <div>
-        <text>tab3</text>
+        <text>我的</text>
       </div>
     </tab-content>
-    <tab-bar class="tab-bar">
-      <text class="tab-bar-item">全部</text>
-      <text class="tab-bar-item">精华</text>
-      <text class="tab-bar-item">更多</text>
+
+    <tab-bar class="index-tab-bar">
+      <text for="{{indexBarItemList}}"
+            class="index-tab-bar-item {{$idx === activeIndexTab ? 'index-tab-bar-item-active' : '' }}">{{$item}}
+      </text>
     </tab-bar>
   </tabs>
 </template>
 
 <script>
   export default {
+    private: {
+      activeIndexTab: 0,
+      activeTopicTab: 0,
+      topicTabBarItemList: [
+        '全部',
+        '精华',
+        '问答',
+        '招聘',
+      ],
+      indexBarItemList: [
+        '帖子',
+        '我的',
+      ],
+    },
 
+    onIndexTabsChange(e) {
+      this.activeIndexTab = e.index
+    },
+
+    oTopicTabsChange(e) {
+      this.activeTopicTab = e.index
+    },
   }
 </script>
 
@@ -30,11 +73,35 @@
   @import "../common/less/var";
 
   .page-index {
-    .tab-bar {
-      background-color: @gray0;
-      .tab-bar-item {
-        text-align: center;
+    /* 帖子 tabs */
+    .topic-tabs {
+      flex-direction: column;
+      .topic-tab-bar {
+        height: 90px;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: @gray1;
       }
+      .topic-tab-bar-item {
+        text-align: center;
+        font-size: 26px;
+      }
+      .topic-tab-bar-item-active {
+        color: @color-main;
+      }
+    }
+
+    .index-tab-bar {
+      background-color: #ffffff;
+      border-top-width: 1px;
+      border-top-style: solid;
+      border-top-color: @gray1;
+    }
+    .index-tab-bar-item {
+      text-align: center;
+    }
+    .index-tab-bar-item-active {
+      color: @color-main;
     }
   }
 </style>

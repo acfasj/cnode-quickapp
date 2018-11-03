@@ -32,7 +32,8 @@
     "pages": {
       "index": {
         "titleBarText": "cnode-quickapp",
-        "menu": false
+        "menu": false,
+        "titleBar": false
       }
     }
   }
