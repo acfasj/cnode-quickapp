@@ -1,27 +1,35 @@
 <template>
-  <list class="topic-list">
-    <list-item class="topic-item" type="topic" for="{{topicList}}">
-      <div class="item-top">
-        <text class="badge {{$item.top ? 'badge-stick' : 'badge-tab'}}">{{getBadgeText($item)}}</text>
-        <text class="item-top-text">
-          <span class="reply-count">{{$item.reply_count}}</span>
-          <span class="separator"> / </span>
-          <span>{{$item.visit_count}}</span>
-          <span class="separator"> • </span>
-          <span>{{$item.date.human}}</span>
-        </text>
-      </div>
-      <text class="title">{{$item.title}}</text>
-      <text class="content">{{$item.content}}</text>
-      <div class="item-bottom">
-        <div>
-          <image class="avatar" src="{{$item.author.avatar_url}}"></image>
-          <text class="username">{{$item.author.loginname}}</text>
+  <refresh class="refresh" onrefresh="refresh" refreshing="{{isRefreshing}}">
+    <list class="topic-list" onscrollbottom="_getTopicList">
+      <list-item type="topic" class="topic-item" for="{{topicList}}">
+        <div class="item-top">
+          <text class="badge {{$item.top ? 'badge-stick' : 'badge-tab'}}">{{getBadgeText($item)}}</text>
+          <text class="item-top-text">
+            <span class="reply-count">{{$item.reply_count}}</span>
+            <span class="separator"> / </span>
+            <span>{{$item.visit_count}}</span>
+            <span class="separator"> • </span>
+            <span>{{$item.last_reply_at.human}}</span>
+          </text>
         </div>
-        <text class="created-at">创建于: {{$item.date.str}}</text>
-      </div>
-    </list-item>
-  </list>
+        <text class="title">{{$item.title}}</text>
+        <text class="content">{{$item.content}}</text>
+        <div class="item-bottom">
+          <div>
+            <image class="avatar" src="{{$item.author.avatar_url}}"></image>
+            <text class="username">{{$item.author.loginname}}</text>
+          </div>
+          <text class="created-at">创建于: {{$item.create_at.str}}</text>
+        </div>
+      </list-item>
+
+      <list-item type="load-status" class="load-status">
+        <progress show="{{hasMore && page !== 1}}" type="circular"></progress>
+        <text show="{{hasMore && page !== 1}}">拼命加载中~</text>
+        <text show="{{!hasMore}}">没有更多了~</text>
+      </list-item>
+    </list>
+  </refresh>
 </template>
 
 <script>
@@ -39,10 +47,83 @@
       return {
         topicList: [],
         page: 1,
+        isLoading: false,
+        hasMore: true,
+        isRefreshing: true,
       }
     },
 
     onInit() {
+      this._getTopicList(false)
+      this.$watch('isRefreshing', 'watchIsRefreshing')
+      this._firstRender = true
+    },
+
+    async _getTopicList() {
+      if (this.isLoading || !this.hasMore) return
+
+      this.isLoading = true
+      let list
+      let err = null
+      try {
+        list = await getTopicList({ page: this.page, tab: this.type, limit: 5 })
+      } catch (e) {
+        err = e
+      } finally {
+        this.isLoading = false
+        this.isRefreshing = false
+      }
+
+      // handle error
+      if (err) {
+        prompt.showToast({ message: '获取主题出错' })
+        console.log(err)
+        return
+      }
+
+      // no more data
+      if (list.length === 0) {
+        this.hasMore = false
+        return
+      }
+
+      // normalize
+      this._normalize(list)
+
+      // update
+      this._update(list)
+    },
+
+    _normalize(list) {
+      list.forEach(item => {
+        item.create_at = _.formatDate(item.create_at, true)
+        item.last_reply_at = _.formatDate(item.last_reply_at, true)
+        item.content = item.content.slice(0, 200).replace(newLineRE, '')
+      })
+    },
+
+    _update(list) {
+      this.topicList = this.topicList.concat(list)
+      this.page += 1
+    },
+
+    watchIsRefreshing(newVal, oldVal) {
+      console.log(newVal, oldVal, '会watch到')
+      if (newVal === false && !this._firstRender) {
+        prompt.showToast({ message: '刷新成功' })
+      }
+    },
+
+    refresh(e) {
+      this.isRefreshing = e.refreshing
+      if (this._firstRender) this._firstRender = false
+
+      // reset
+      this.topicList = []
+      this.page = 1
+      this.isLoading = false
+      this.hasMore = true
+
       this._getTopicList()
     },
 
@@ -60,45 +141,29 @@
       }
     },
 
-    async _getTopicList() {
-      let list
-      try {
-        list = await getTopicList({ page: this.page, tab: this.type })
-      } catch (e) {
-        prompt.showToast({ message: '获取主题出错' })
-        return console.error(e)
-      }
-
-      list.forEach(item => {
-        item.date = _.formatDate(item.create_at, true)
-        item.content = item.content.slice(0, 200).replace(newLineRE, '')
-        delete item.create_at
-      })
-
-      console.log(list)
-
-      this.topicList = this.topicList.concat(list)
-      this.page += 1
-    },
   }
 </script>
 
 
 <style type="text/less" lang="less">
-  @import "../common/less/vars";
+  @import "../common/less/var";
+
+  .refresh {
+    progress-color: @color-main;
+  }
 
   .topic-list {
     background-color: @gray1;
     font-size: @font-size-m;
     color: @gray0;
 
-    /* item 顶部 */
     .topic-item {
       flex-direction: column;
       padding: 20px;
       margin-bottom: 20px;
       background-color: #ffffff;
 
+      /* item 顶部 */
       .item-top {
         justify-content: space-between;
         margin-bottom: 20px;
@@ -153,6 +218,16 @@
       }
       .username, .created-at {
         font-size: @font-size-s;
+      }
+    }
+
+    .load-status {
+      justify-content: center;
+      margin-bottom: 20px;
+
+      progress {
+        color: @color-main;
+        margin: 0 10px;
       }
     }
   }

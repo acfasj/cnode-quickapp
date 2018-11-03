@@ -2,6 +2,7 @@ const _ = {}
 const SECOND = 1000
 const HOUR = 3600 * SECOND
 const DAY = 24 * HOUR
+const WEEK = 7 * DAY
 const MONTH = 30 * DAY
 const YEAR = 12 * MONTH
 
@@ -32,6 +33,8 @@ function formatForHuman(date) {
     return (Math.floor(diff / YEAR) + '年前')
   } else if (diff >= MONTH) {
     return (Math.floor(diff / MONTH) + '个月前')
+  } else if (diff >= WEEK) {
+    return (Math.floor(diff / WEEK) + '周前')
   } else if (diff >= DAY) {
     return (Math.floor(diff / DAY) + '天前')
   } else if (diff >= HOUR) {

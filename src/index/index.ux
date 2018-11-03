@@ -5,7 +5,7 @@
     <tab-content>
       <topic-list></topic-list>
       <div>
-        <topic-list type="good"></topic-list>
+        <!--<topic-list type="good"></topic-list>-->
       </div>
       <div>
         <text>tab3</text>
@@ -27,7 +27,7 @@
 
 
 <style type="text/less" lang="less">
-  @import "../common/less/vars.less";
+  @import "../common/less/var";
 
   .page-index {
     .tab-bar {
