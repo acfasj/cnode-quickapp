@@ -8,21 +8,13 @@
         <tab-bar class="topic-tab-bar">
           <text for="{{topicTabBarItemList}}"
                 class="topic-tab-bar-item {{$idx === activeTopicTab ? 'topic-tab-bar-item-active' : '' }}"
-          >{{$item}}
+          >{{$item.name}}
           </text>
         </tab-bar>
 
         <tab-content>
-          <topic-list></topic-list>
-          <div>
-            <!--<topic-list type="good"></topic-list>-->
-            <text>精华</text>
-          </div>
-          <div>
-            <text>问答</text>
-          </div>
-          <div>
-            <text>招聘</text>
+          <div for="{{topicTabBarItemList}}">
+            <topic-list if="{{$idx === activeTopicTab || $item.rendered}}" type="{{$item.type}}"></topic-list>
           </div>
         </tab-content>
       </tabs>
@@ -47,15 +39,20 @@
       activeIndexTab: 0,
       activeTopicTab: 0,
       topicTabBarItemList: [
-        '全部',
-        '精华',
-        '问答',
-        '招聘',
+        { type: '', name: '全部', rendered: false },
+        { type: 'good', name: '精华', rendered: false },
+        { type: 'share', name: '分享', rendered: false },
+        { type: 'ask', name: '问答', rendered: false },
+        { type: 'job', name: '招聘', rendered: false },
       ],
       indexBarItemList: [
         '帖子',
         '我的',
       ],
+    },
+
+    onInit() {
+      console.log(this.$app, '啊哈哈哈哈')
     },
 
     onIndexTabsChange(e) {
@@ -64,6 +61,10 @@
 
     oTopicTabsChange(e) {
       this.activeTopicTab = e.index
+      // 第一次渲染之后就不要再重新渲染了
+      if (!this.topicTabBarItemList[e.index].rendered) {
+        this.topicTabBarItemList[e.index].rendered = true
+      }
     },
   }
 </script>

@@ -1,18 +1,25 @@
 <script>
   import fetch from '@system.fetch'
   import prompt from '@system.prompt'
+  import router from '@system.router'
   import helper from './common/helper'
-  import util from './util'
 
   const injectRef = Object.getPrototypeOf(global) || global
 
   injectRef.regeneratorRuntime = require('babel-runtime/regenerator')
   injectRef.fetch = fetch
   injectRef.prompt = prompt
-  injectRef._ = helper
+  injectRef.router = router
 
-  export default {
-    showMenu: util.showMenu,
-    createShortcut: util.createShortcut
-  }
+  const app = {}
+  Object.assign(app, helper)
+  /**
+   * 只是为了调用方便而已
+   * 在不是app.ux的组件里
+   * this.$app.$def === _
+   * this.$app 则复制了 _ 的属性然后加了一堆鬼东西
+   */
+  injectRef._ = app
+
+  export default app
 </script>

@@ -67,6 +67,7 @@
   "globals": {
     "_": true,
     "fetch": true,
-    "prompt": true
+    "prompt": true,
+    "router": true
   }
 }

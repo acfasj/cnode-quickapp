@@ -21,7 +21,12 @@
     "entry": "index",
     "pages": {
       "index": {
-        "component": "index"
+        "component": "index",
+        "path": "/"
+      },
+      "topic": {
+        "component": "index",
+        "path": "/topic"
       }
     }
   },

@@ -1,0 +1,131 @@
+<import name="badge" src="../component/badge.ux"></import>
+<template>
+  <div class="page-topic">
+    <block if="{{true}}">
+      <text class="title">{{topic.title}}</text>
+      <div class="topic-top">
+        <div class="info">
+          <image class="avatar" src="{{$app.chain(topic, 'author', 'avatar_url')}}"></image>
+          <div class="info-detail">
+            <div>
+              <!-- 为了计算正确的 badge text, 所以 if -->
+              <badge if="{{topic.tab}}" item="{{topic}}"></badge>
+              <text class="nickname">{{$app.chain(topic, 'author', 'loginname')}}</text>
+            </div>
+            <text class="meta-text">
+              <span>{{$app.chain(topic, 'create_at', 'human')}}创建</span>
+              <span> • </span>
+              <span>{{topic.visit_count}}次浏览</span>
+            </text>
+          </div>
+        </div>
+        <image
+            class="icon-collect"
+            src="/common/img/{{topic.is_collect ? 'ic_favorite_theme_24px.svg' : 'ic_favorite_outline_grey_24px.svg'}}">
+        </image>
+      </div>
+
+      <richtext type="html" class="content">
+        {{topic.content}}
+      </richtext>
+    </block>
+  </div>
+</template>
+
+<script>
+  import { getTopic } from '../api/topic'
+
+  export default {
+    public: {
+      id: 0,
+    },
+
+    private: {
+      topic: {},
+      replies: [],
+    },
+
+    onInit() {
+      // if (!this.id) return router.back()
+      if (!this.id) this.id = '5bd4772a14e994202cd5bdb7' // debug
+
+      this._getTopic(this.id)
+    },
+
+    async _getTopic(id, opts) {
+      let topic
+      try {
+        topic = await getTopic(id, opts)
+      } catch (e) {
+        prompt.showToast({ message: '获取主题出错' })
+        return console.error(e)
+      }
+
+      this._normalize(topic)
+
+      console.log(topic)
+    },
+
+    _normalize(topic) {
+      topic.create_at = _.formatDate(topic.create_at, true)
+
+      this.replies = topic.replies
+      delete topic.replies
+      this.topic = topic
+    },
+  }
+</script>
+
+<style type="text/less" lang="less">
+  @import "../common/less/var";
+
+  .page-topic {
+    flex-direction: column;
+    padding: 20px;
+
+    .title {
+      color: @black1;
+      font-size: @font-size-l;
+    }
+
+    .topic-top {
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+      .avatar {
+        height: 100px;
+        border-radius: 50px;
+        margin-right: 30px;
+      }
+      .info {
+
+        align-items: center;
+      }
+      .info-detail {
+        flex-direction: column;
+      }
+      .nickname {
+        margin-left: 10px;
+      }
+      .meta-text {
+        margin-top: 10px;
+      }
+      .icon-collect {
+        width: 50px;
+      }
+    }
+
+    /* content 富文本 */
+    .content {
+      background-color: pink;
+      color: blue;
+      .markdown-text {
+        width: 50%;
+        color: gray;
+      }
+      .link {
+        color: pink;
+      }
+    }
+  }
+</style>

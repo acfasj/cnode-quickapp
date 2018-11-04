@@ -1,0 +1,58 @@
+<template>
+  <text class="badge {{item.top ? 'badge-stick' : 'badge-tab'}}">{{text}}</text>
+</template>
+
+<script>
+  export default {
+    props: {
+      item: {
+        item: Object,
+        required: true
+      }
+    },
+
+    data() {
+      return {
+        text: ''
+      }
+    },
+
+    onInit() {
+      this.text = this.getBadgeText(this.item)
+    },
+
+    getBadgeText(item) {
+      if (item.top) return '置顶'
+      switch (item.tab) {
+        case 'good':
+          return '精华'
+        case 'share':
+          return '分享'
+        case 'ask':
+          return '问答'
+        case 'job':
+          return '招聘'
+        default:
+          return '未知'
+      }
+    },
+  }
+</script>
+
+<style type="text/less" lang="less">
+  @import "../common/less/var";
+
+  .badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: @font-size-s;
+  }
+  .badge-stick {
+    color: #ffffff;
+    background-color: @color-main;
+  }
+  .badge-tab {
+    color: #8d8d8d;
+    background-color: @gray1;
+  }
+</style>
