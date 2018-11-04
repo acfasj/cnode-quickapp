@@ -53,17 +53,18 @@
     },
 
     async _getTopic(id, opts) {
-      let topic
+      let res
       try {
-        topic = await getTopic(id, opts)
+        res = await getTopic(id, opts)
       } catch (e) {
-        prompt.showToast({ message: '获取主题出错' })
-        return console.error(e)
+        return prompt.showToast({ message: '获取主题出错' })
+      }
+      if (!res.success) {
+        return
       }
 
+      const topic = res.data
       this._normalize(topic)
-
-      console.log(topic)
     },
 
     _normalize(topic) {

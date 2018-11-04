@@ -69,11 +69,12 @@
     async _getTopicList() {
       if (this.isLoading || !this.hasMore) return
 
+      // fetch data
       this.isLoading = true
-      let list
+      let res
       let err = null
       try {
-        list = await getTopicList({ page: this.page, tab: this.type, limit: 5 })
+        res = await getTopicList({ page: this.page, tab: this.type, limit: 5 })
       } catch (e) {
         err = e
       } finally {
@@ -83,10 +84,13 @@
 
       // handle error
       if (err) {
-        prompt.showToast({ message: '获取主题出错' })
-        console.log(err)
+        return prompt.showToast({ message: err })
+      }
+      if (!res.success) {
         return
       }
+
+      const list = res.data
 
       // no more data
       if (list.length === 0) {

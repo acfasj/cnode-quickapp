@@ -4,13 +4,21 @@ export default function _fetch(options) {
   return new Promise((resolve, reject) => {
     const o = {
       success(res) {
-        res = JSON.parse(res.data)
-        if (!res.data) {
-          return reject(res.msg || '服务器出错')
+        // 304 is tricky
+        // https://github.com/axios/axios/issues/877
+        // https://stackoverflow.com/questions/13783442/how-to-tell-if-an-xmlhttprequest-hit-the-browser-cache
+        if ((res.code >= 200 && res.code < 300) || res.code === 304) {
+          const json = JSON.parse(res.data)
+          console.log(res)
+          resolve(json)
+        } else {
+          const msg = `HTTP: ${res.code}`
+          console.error(msg)
+          reject(msg)
         }
-        resolve(res.data)
       },
       fail(err) {
+        console.error(err)
         reject(err)
       },
       header: {
