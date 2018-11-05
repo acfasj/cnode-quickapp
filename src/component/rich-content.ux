@@ -1,11 +1,29 @@
 <template>
-  <div>
-  </div>
+  <richtext type="html" class="richtext">
+    {{content}}
+  </richtext>
 </template>
 
 <script>
-  export default {}
+  // 先放一边, 富文本还不懂怎么处理
+  const wrapperRE = /(<div class="markdown-text")/gi
+  const wrapperStyle = `style="color: #333"`
+
+  export default {
+    props: {
+      content: {
+        type: String,
+        required: true,
+      },
+    },
+
+    onInit() {
+      this.content = this.content.replace(wrapperRE, '$1 ' + wrapperStyle)
+    }
+  }
 </script>
 
 <style type="text/less" lang="less">
+  .richtext {
+  }
 </style>

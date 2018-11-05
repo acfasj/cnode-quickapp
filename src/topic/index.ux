@@ -1,14 +1,18 @@
 <import name="badge" src="../component/badge.ux"></import>
+<import name="rich-content" src="../component/rich-content.ux"></import>
 <template>
-  <div class="page-topic">
-    <block if="{{true}}">
-      <text class="title">{{topic.title}}</text>
-      <div class="topic-top">
+  <div show="topic.tab">
+    <list class="page-topic">
+
+      <list-item type="title">
+        <text class="title">{{topic.title}}</text>
+      </list-item>
+
+      <list-item type="topic-top" class="topic-top">
         <div class="info">
           <image class="avatar" src="{{$app.chain(topic, 'author', 'avatar_url')}}"></image>
           <div class="info-detail">
             <div>
-              <!-- 为了计算正确的 badge text, 所以 if -->
               <badge if="{{topic.tab}}" item="{{topic}}"></badge>
               <text class="nickname">{{$app.chain(topic, 'author', 'loginname')}}</text>
             </div>
@@ -20,15 +24,41 @@
           </div>
         </div>
         <image
-            class="icon-collect"
+            class="icon"
             src="/common/img/{{topic.is_collect ? 'ic_favorite_theme_24px.svg' : 'ic_favorite_outline_grey_24px.svg'}}">
         </image>
-      </div>
+      </list-item>
 
-      <richtext type="html" class="content">
-        {{topic.content}}
-      </richtext>
-    </block>
+      <list-item type="rich-content">
+        <rich-content if="{{topic.content}}" content="{{topic.content}}"></rich-content>
+      </list-item>
+
+      <list-item type="reply-length">
+        <text>{{topic.replies.length}}条回复</text>
+      </list-item>
+
+      <list-item type="reply-item" class="reply-item" for="{{topic.replies}}">
+        <div class="reply-item-top">
+          <div class="reply-item-top-left">
+            <image class="avatar" src="{{$item.author.avatar_url}}"></image>
+            <div class="info">
+              <text>{{$item.author.loginname}}</text>
+              <text>
+                <span>{{$idx + 1}}楼</span>
+                <span> • </span>
+                <span>{{$item.create_at.human}}</span>
+              </text>
+            </div>
+          </div>
+          <div class="reply-item-top-right">
+            <image class="icon" src="/common/img/ic_thumb_up_grey_24px.svg"></image>
+            <text>{{$item.ups.length}}</text>
+            <image class="icon" src="/common/img/ic_reply_grey_24px.svg"></image>
+          </div>
+        </div>
+        <text>{{$item.content}}</text>
+      </list-item>
+    </list>
   </div>
 </template>
 
@@ -41,8 +71,12 @@
     },
 
     private: {
-      topic: {},
-      replies: [],
+      topic: {
+        title: '',
+        content: '',
+        visit_count: 0,
+        replies: [],
+      },
     },
 
     onInit() {
@@ -69,9 +103,10 @@
 
     _normalize(topic) {
       topic.create_at = _.formatDate(topic.create_at, true)
+      topic.replies.forEach(item => {
+        item.create_at = _.formatDate(item.create_at, true)
+      })
 
-      this.replies = topic.replies
-      delete topic.replies
       this.topic = topic
     },
   }
@@ -82,7 +117,18 @@
 
   .page-topic {
     flex-direction: column;
-    padding: 20px;
+    padding: 0 20px;
+    .icon {
+      width: 50px;
+    }
+    .nickname {
+      margin-left: 10px;
+    }
+    .avatar {
+      height: 100px;
+      border-radius: 50px;
+      margin-right: 30px;
+    }
 
     .title {
       color: @black1;
@@ -93,39 +139,35 @@
       justify-content: space-between;
       align-items: center;
       margin: 20px 0;
-      .avatar {
-        height: 100px;
-        border-radius: 50px;
-        margin-right: 30px;
-      }
       .info {
-
         align-items: center;
       }
       .info-detail {
         flex-direction: column;
       }
-      .nickname {
-        margin-left: 10px;
-      }
       .meta-text {
         margin-top: 10px;
       }
-      .icon-collect {
-        width: 50px;
-      }
     }
 
-    /* content 富文本 */
-    .content {
-      background-color: pink;
-      color: blue;
-      .markdown-text {
-        width: 50%;
-        color: gray;
+    .reply-item {
+      flex-direction: column;
+      padding: 20px 0;
+      border-top-width: 1px;
+      border-top-style: solid;
+      border-top-color: @gray0;
+
+      .reply-item-top {
+        justify-content: space-between;
       }
-      .link {
-        color: pink;
+      .avatar {
+        margin-right: 30px;
+      }
+      .info {
+        flex-direction: column;
+      }
+      .reply-item-top-right {
+        align-items: center;
       }
     }
   }

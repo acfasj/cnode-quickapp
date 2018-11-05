@@ -9,7 +9,9 @@
     { "name": "system.prompt" },
     { "name": "system.router" },
     { "name": "system.shortcut" },
-    { "name": "system.fetch" }
+    { "name": "system.fetch" },
+    { "name": "system.file" },
+    { "name": "system.webview" }
   ],
   "permissions": [
     { "origin": "*" }
@@ -18,7 +20,7 @@
     "logLevel": "debug"
   },
   "router": {
-    "entry": "index",
+    "entry": "topic",
     "pages": {
       "index": {
         "component": "index",

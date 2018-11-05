@@ -144,21 +144,6 @@
         params: { id },
       })
     },
-
-    getBadgeText(item) {
-      if (item.top) return '置顶'
-      switch (item.tab) {
-        case 'good':
-          return '精华'
-        case 'share':
-          return '分享'
-        case 'ask':
-          return '问答'
-        default:
-          return '未知'
-      }
-    },
-
   }
 </script>
 

@@ -140,7 +140,7 @@ function chain(...args) {
     }
   }
 
-  return ret || false
+  return ret || ''
 }
 
 export default {

@@ -2,6 +2,8 @@
   import fetch from '@system.fetch'
   import prompt from '@system.prompt'
   import router from '@system.router'
+  import file from '@system.file'
+  import webview from '@system.webview'
   import helper from './common/helper'
 
   const injectRef = Object.getPrototypeOf(global) || global
@@ -10,6 +12,8 @@
   injectRef.fetch = fetch
   injectRef.prompt = prompt
   injectRef.router = router
+  injectRef.file = file
+  injectRef.webview = webview
 
   const app = {}
   Object.assign(app, helper)
